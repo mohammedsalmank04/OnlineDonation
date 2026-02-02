@@ -3,6 +3,7 @@ package com.practice.onlinedonation.Repository;
 import com.practice.onlinedonation.Model.Donation;
 import com.practice.onlinedonation.Model.User;
 import com.practice.onlinedonation.payload.DonationDetailsByUserDTO;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -46,6 +47,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
                     "organization.donationCategory"
             }
     )
+
     List<Donation> findAll();
 }
 

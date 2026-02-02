@@ -47,7 +47,6 @@ public class AuthController {
     @GetMapping("/api/auth/username")
     public String currentUserName(Authentication authentication){
         if(authentication != null){
-            System.out.println(authentication.getName());
             return authentication.getName();
         }
         System.out.println("Out of if statement");
@@ -57,7 +56,6 @@ public class AuthController {
     @PostMapping("/auth/signout")
     public ResponseEntity<?> signOutUser(){
         ResponseCookie cookie = jwtService.getCleanCookie();
-
         return ResponseEntity
                 .ok()
                 .header(HttpHeaders.SET_COOKIE,cookie.toString())
