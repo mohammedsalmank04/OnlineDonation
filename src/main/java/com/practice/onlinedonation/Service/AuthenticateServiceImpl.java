@@ -10,12 +10,20 @@ import com.practice.onlinedonation.security.payload.LoginResponse;
 import com.practice.onlinedonation.security.payload.SignUpRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class AuthenticateServiceImpl implements AuthenticateService{
@@ -54,9 +62,37 @@ public class AuthenticateServiceImpl implements AuthenticateService{
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwtToken = jwtService.generateToken(userDetails);
+        ResponseCookie jwtCookie = jwtService.generateJwtCookie(userDetails);
+
+        //String jwtToken = jwtService.generateToken(userDetails);
         LoginResponse loginUser = modelMapper.map(userDetails,LoginResponse.class);
-        loginUser.setJwtToken(jwtToken);
+        //loginUser.setJwtToken(jwtToken);
         return loginUser;
+    }
+
+    @Override
+    public ResponseEntity<?> loginUsingCookie(LoginRequest user) {
+        Authentication authentication;
+        try {
+            authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+        } catch (AuthenticationException exception) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("Message", "Bad Credentials");
+            map.put("Status", false);
+            return new ResponseEntity<Object>(map, HttpStatus.NOT_FOUND);
+        }
+
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        ResponseCookie jwtCookie = jwtService.generateJwtCookie(userDetails);
+
+        //String jwtToken = jwtService.generateToken(userDetails);
+        LoginResponse loginUser = modelMapper.map(userDetails,LoginResponse.class);
+        //loginUser.setJwtToken(jwtToken);
+        System.out.println(loginUser);
+        return  ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,jwtCookie.toString()).body(loginUser);
     }
 }

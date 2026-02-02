@@ -38,6 +38,15 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
             }
     )
     List<Donation> findByUser_userId(Long userId);
+
+    @EntityGraph(
+            attributePaths = {
+                    "user",
+                    "organization",
+                    "organization.donationCategory"
+            }
+    )
+    List<Donation> findAll();
 }
 
 

@@ -41,7 +41,7 @@ public class DonationController {
     // Gets all the donation along with the user and also organization
     @GetMapping("/donation")
     public ResponseEntity<DonationResponseDTO> getAllDonation(){
-        /*System.out.println("****************** In get donation **********************");*/
+        System.out.println("****************** In get donation **********************");
         DonationResponseDTO donations = donationService.getAllDonations();
         return new ResponseEntity<>(donations,HttpStatus.OK);
     }
