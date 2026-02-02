@@ -13,6 +13,6 @@ public class OrganizationDTO {
     private Long organizationId;
     private String organizationName;
 
-    private DonationCategory donationCategory;
+
 
 }

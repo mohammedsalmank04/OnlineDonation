@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 
 @Entity
 @Data
@@ -17,6 +19,12 @@ public class DonationCategory {
     private Long DonationCategoryId;
 
     private String categoryName;
+
+    @OneToMany(
+            mappedBy = "donationCategory",
+            cascade = {CascadeType.MERGE,CascadeType.PERSIST}, orphanRemoval = true
+    )
+    private List<Organization> organizationList;
 
 
 }

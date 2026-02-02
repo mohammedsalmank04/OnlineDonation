@@ -23,6 +23,11 @@ public class Donation {
     @JoinColumn(name = "userId")
     private User user;
 
+    @ManyToOne
+    @JoinColumn
+    private Organization organization;
+
+
     public Donation(String description, Long donationAmount, User user) {
         this.description = description;
         this.donationAmount = donationAmount;

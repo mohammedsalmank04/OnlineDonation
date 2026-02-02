@@ -6,9 +6,12 @@ import com.practice.onlinedonation.Model.Organization;
 import com.practice.onlinedonation.Repository.DonationCategoryRepository;
 import com.practice.onlinedonation.Repository.OrganizationRepository;
 import com.practice.onlinedonation.payload.OrganizationDTO;
+import com.practice.onlinedonation.payload.OrganizationResponseDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
@@ -24,8 +27,54 @@ public class OrganizationServiceImpl implements OrganizationService {
         DonationCategory donationCategory = donationCategoryRepository.findById(categoryId).orElseThrow(
                 () -> new ResourceNotFoundException("Category","CategoryID",categoryId)
         );
-        organizationDTO.setDonationCategory(donationCategory);
         Organization organization = modelMapper.map(organizationDTO,Organization.class);
-        return modelMapper.map(organizationRepository.save(organization), OrganizationDTO.class);
+        organization.setDonationCategory(donationCategory);
+        Organization savedOrganization = organizationRepository.save(organization);
+
+        return modelMapper.map(organization, OrganizationDTO.class);
+    }
+
+    @Override
+    public OrganizationResponseDTO getAllOrganization() {
+        List<Organization> organizationList = organizationRepository.findAll();
+        List<OrganizationDTO> organizationDTO = organizationList.stream().map(
+                organization -> modelMapper.map(organization,OrganizationDTO.class)
+        ).toList();
+        OrganizationResponseDTO organizationResponseDTO = new OrganizationResponseDTO();
+        organizationResponseDTO.setBuild(organizationDTO);
+        return organizationResponseDTO;
+    }
+
+    @Override
+    public OrganizationDTO editOrganization(
+            Long organizationId,
+            Long categoryId,
+            OrganizationDTO organization) {
+        Organization oldOrganization = organizationRepository.findById(organizationId).orElseThrow(
+                () -> new ResourceNotFoundException("Organization","Organization ID: " , organizationId)
+        );
+        DonationCategory category = donationCategoryRepository.findById(categoryId).orElseThrow(
+                () -> new ResourceNotFoundException("Category", "Category ID:",categoryId)
+        );
+
+        oldOrganization.setOrganizationName(organization.getOrganizationName());
+        oldOrganization.setDonationCategory(category);
+        Organization savedOrganization = organizationRepository.save(oldOrganization);
+        return modelMapper.map(savedOrganization,OrganizationDTO.class);
+    }
+
+    public OrganizationDTO editOrganization1(
+            Long organizationId,
+
+            OrganizationDTO organization) {
+        Organization oldOrganization = organizationRepository.findById(organizationId).orElseThrow(
+                () -> new ResourceNotFoundException("Organization","Organization ID: " , organizationId)
+        );
+
+
+        oldOrganization.setOrganizationName(organization.getOrganizationName());
+
+        Organization savedOrganization = organizationRepository.save(oldOrganization);
+        return modelMapper.map(savedOrganization,OrganizationDTO.class);
     }
 }
