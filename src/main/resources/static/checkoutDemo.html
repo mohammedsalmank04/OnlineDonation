@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Donation Checkout</title>
+</head>
+<body>
+
+<h2>Donation Payment</h2>
+
+<form id="donationForm">
+
+    <label>User ID:</label><br>
+    <input type="number" id="userId" required><br><br>
+
+    <label>Organization ID:</label><br>
+    <input type="number" id="organizationId" required><br><br>
+
+    <label>Donation Amount:</label><br>
+    <input type="number" id="donationAmount" required><br><br>
+
+    <label>Description:</label><br>
+    <input type="text" id="description" required><br><br>
+
+    <label>Email:</label><br>
+    <input type="email" id="email" required><br><br>
+
+    <label>User Name:</label><br>
+    <input type="text" id="userName" required><br><br>
+
+    <button type="submit">Proceed to Pay</button>
+
+</form>
+
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+    const stripe = Stripe("pk_test_51SwQBq09w0EAPYrQAGOL6hvRPSWpLhTlJJGMlrr7npOXuMfvnoI4uXgdIShcxWdAN0PBgLvJaAGiJmKzozb2dOUv00O34EH052");
+
+    document.getElementById("donationForm")
+        .addEventListener("submit", async function (e) {
+
+            e.preventDefault();
+
+            const data = {
+                userId: document.getElementById("userId").value,
+                organizationId: document.getElementById("organizationId").value,
+                donationAmount: document.getElementById("donationAmount").value,
+                description: document.getElementById("description").value,
+                email: document.getElementById("email").value,
+                userName: document.getElementById("userName").value
+            };
+
+            const response = await fetch("/api/payment/checkout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            await stripe.redirectToCheckout({
+                sessionId: result.sessionId
+            });
+        });
+</script>
+
+</body>
+</html>

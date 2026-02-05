@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Donation Checkout</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <style>
+        body {
+            background:#f5f7fa;
+        }
+        .container-box{
+            max-width:500px;
+            margin-top:50px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container container-box">
+
+    <h3 class="mb-4">Donation Checkout</h3>
+
+    <!-- USER INFO -->
+    <div class="mb-3">
+        <p><strong>Name:</strong> <span id="userName"></span></p>
+        <p><strong>Email:</strong> <span id="userEmail"></span></p>
+    </div>
+
+    <!-- FORM -->
+    <form id="donationForm">
+
+        <!-- ORGANIZATION -->
+        <div class="mb-3">
+            <label class="form-label">Select Organization</label>
+            <select id="organizationSelect" class="form-select" required>
+                <option value="">-- Select Organization --</option>
+            </select>
+        </div>
+
+        <!-- AMOUNT -->
+        <div class="mb-3">
+            <label class="form-label">Donation Amount</label>
+            <input type="number" id="donationAmount"
+                   class="form-control" required>
+        </div>
+
+        <!-- DESCRIPTION -->
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <input type="text" id="description"
+                   class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">
+            Proceed to Pay
+        </button>
+
+    </form>
+
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+
+    const stripe = Stripe("pk_test_51SwQBq09w0EAPYrQAGOL6hvRPSWpLhTlJJGMlrr7npOXuMfvnoI4uXgdIShcxWdAN0PBgLvJaAGiJmKzozb2dOUv00O34EH052");
+    let user = null;
+    // ==================================
+    // LOAD LOGGED-IN USER INFO
+    // ==================================
+    fetch("/api/auth/me", {
+        method: "GET",
+        credentials: "include"
+    })
+        .then(res => res.json())
+        .then(data => {
+
+            user = data;
+            console.log("User Details " + user.firstName + " " + user.lastName);
+
+            document.getElementById("userName").innerText =
+                user.firstName + " " + user.lastName;
+
+            document.getElementById("userEmail").innerText =
+                user.email;
+
+        });
+
+    // ==================================
+    // LOAD ORGANIZATIONS
+    // ==================================
+    fetch("http://localhost:8080/api/public/organization", {
+        credentials: "include"
+    })
+        .then(res => res.json())
+        .then(responseObj => {
+
+            const organizations = responseObj.build;
+
+            const select = document.getElementById("organizationSelect");
+            select.innerHTML = "<option value=''>-- Select Organization --</option>";
+
+            organizations.forEach(org => {
+
+                const option = document.createElement("option");
+                option.value = org.organizationId;
+                option.textContent = org.organizationName;
+
+                select.appendChild(option);
+            });
+
+        })
+        .catch(error => {
+            console.error("Organization load error:", error);
+            alert("Unable to load organizations");
+        });
+
+
+    // ==================================
+    // SUBMIT CHECKOUT
+    // ==================================
+    document.getElementById("donationForm")
+        .addEventListener("submit", async function (e) {
+
+            e.preventDefault();
+
+            const payload = {
+                user,
+                organizationId:
+                document.getElementById("organizationSelect").value,
+                donationAmount:
+                document.getElementById("donationAmount").value,
+                description:
+                document.getElementById("description").value,
+
+            };
+            console.log(payload);
+
+            const response = await fetch("/api/payment/checkout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            await stripe.redirectToCheckout({
+                sessionId: result.sessionId
+            });
+
+        });
+
+</script>
+
+</body>
+</html>
