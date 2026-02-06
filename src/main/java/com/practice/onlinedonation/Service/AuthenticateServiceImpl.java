@@ -3,6 +3,7 @@ package com.practice.onlinedonation.Service;
 import com.practice.onlinedonation.Exception.ResourceNotFoundException;
 import com.practice.onlinedonation.Model.User;
 import com.practice.onlinedonation.Repository.UserRepository;
+import com.practice.onlinedonation.payload.UserResponseDTO;
 import com.practice.onlinedonation.security.UserDetails.UserDetailsImpl;
 import com.practice.onlinedonation.security.jwt.JwtService;
 import com.practice.onlinedonation.security.payload.LoginRequest;
@@ -50,10 +51,61 @@ public class AuthenticateServiceImpl implements AuthenticateService{
         return modelMapper.map(userRepository.save(u), LoginResponse.class);
     }
 
+
+
+    @Override
+    public ResponseEntity<?> loginUsingCookie(LoginRequest user) {
+        Authentication authentication;
+
+        try {
+            authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+        } catch (AuthenticationException exception) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("Message", "Bad Credentials");
+            map.put("Status", false);
+            return new ResponseEntity<Object>(map, HttpStatus.NOT_FOUND);
+        }
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        //A user without a cookie(Someone who was logged out logged in so attach cookies to it)
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        if(userDetails == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    "Please login again"
+            );
+        }
+        ResponseCookie jwtCookie = jwtService.generateJwtCookie(userDetails);
+
+
+        return  ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,jwtCookie.toString()).body(
+                modelMapper.map(userDetails,UserResponseDTO.class)
+        );
+    }
+
+    @Override
+    public UserResponseDTO getCurrentUser(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(auth != null && auth.isAuthenticated()){
+            Object principal = auth.getPrincipal();
+            if(principal instanceof UserDetailsImpl){
+                return modelMapper.map(
+                        principal,UserResponseDTO.class
+                );
+            }
+        }
+        return null;
+
+    }
+
+
+    //This method uses jwt cookies to login not in use for now
     @Override
     public LoginResponse login(LoginRequest user) {
         Authentication authentication;
-       authentication = authenticationManager.authenticate(
+        authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         user.getEmail(),
                         user.getPassword()
@@ -75,31 +127,5 @@ public class AuthenticateServiceImpl implements AuthenticateService{
         LoginResponse loginUser = modelMapper.map(userDetails,LoginResponse.class);
         //loginUser.setJwtToken(jwtToken);
         return loginUser;
-    }
-
-    @Override
-    public ResponseEntity<?> loginUsingCookie(LoginRequest user) {
-        Authentication authentication;
-        try {
-            authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
-        } catch (AuthenticationException exception) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("Message", "Bad Credentials");
-            map.put("Status", false);
-            return new ResponseEntity<Object>(map, HttpStatus.NOT_FOUND);
-        }
-
-
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        ResponseCookie jwtCookie = jwtService.generateJwtCookie(userDetails);
-
-        //String jwtToken = jwtService.generateToken(userDetails);
-        LoginResponse loginUser = modelMapper.map(userDetails,LoginResponse.class);
-        //loginUser.setJwtToken(jwtToken);
-
-        return  ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,jwtCookie.toString()).body(loginUser);
     }
 }

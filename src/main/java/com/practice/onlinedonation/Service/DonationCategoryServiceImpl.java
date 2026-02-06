@@ -1,7 +1,6 @@
 package com.practice.onlinedonation.Service;
 
 import com.practice.onlinedonation.Exception.ApiException;
-import com.practice.onlinedonation.Exception.ResourceNotFoundException;
 import com.practice.onlinedonation.Model.DonationCategory;
 import com.practice.onlinedonation.Repository.DonationCategoryRepository;
 import com.practice.onlinedonation.payload.CategoryResponseDTO;
@@ -41,14 +40,16 @@ public class DonationCategoryServiceImpl implements DonationCategoryService {
     }
 
     @Override
-    public DonationCategoryDTO editCategory(Long categoryId,
-                                            DonationCategoryDTO donationCategoryDTO) {
-        DonationCategory oldCategory = donationCategoryRepository.findById(categoryId).orElseThrow(
+    public int editCategory(Long categoryId,
+                            DonationCategoryDTO donationCategoryDTO) {
+        /*DonationCategory oldCategory = donationCategoryRepository.findById(categoryId).orElseThrow(
                 () -> new ResourceNotFoundException("Category","Category ID: ",categoryId)
         );
         oldCategory.setCategoryName(donationCategoryDTO.getCategoryName());
-        DonationCategory newCategory = donationCategoryRepository.save(oldCategory);
-        return modelMapper.map(newCategory, DonationCategoryDTO.class);
+        DonationCategory newCategory = donationCategoryRepository.save(oldCategory);*/
+
+        return donationCategoryRepository
+                .updateCategory(categoryId,donationCategoryDTO.getCategoryName());
     }
 
     @Override

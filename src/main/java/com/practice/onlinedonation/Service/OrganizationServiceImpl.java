@@ -64,19 +64,11 @@ public class OrganizationServiceImpl implements OrganizationService {
         return modelMapper.map(savedOrganization,OrganizationDTO.class);
     }
 
-    public OrganizationDTO editOrganization1(
+    public int editOrganization1(
             Long organizationId,
 
             OrganizationDTO organization) {
-        Organization oldOrganization = organizationRepository.findById(organizationId).orElseThrow(
-                () -> new ResourceNotFoundException("Organization","Organization ID: " , organizationId)
-        );
-
-
-        oldOrganization.setOrganizationName(organization.getOrganizationName());
-
-        Organization savedOrganization = organizationRepository.save(oldOrganization);
-        return modelMapper.map(savedOrganization,OrganizationDTO.class);
+        return organizationRepository.updateOrganization(organizationId,organization.getOrganizationName());
     }
 
     @Override

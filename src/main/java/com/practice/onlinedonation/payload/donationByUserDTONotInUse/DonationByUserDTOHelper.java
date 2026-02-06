@@ -1,7 +1,5 @@
-package com.practice.onlinedonation.payload.donationByUserDTO;
+package com.practice.onlinedonation.payload.donationByUserDTONotInUse;
 
-import com.practice.onlinedonation.Model.Donation;
-import com.practice.onlinedonation.Model.Organization;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

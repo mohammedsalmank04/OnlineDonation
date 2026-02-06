@@ -8,7 +8,7 @@ public interface DonationCategoryService {
 
     CategoryResponseDTO getALlCategory();
 
-    DonationCategoryDTO editCategory(Long categoryId, DonationCategoryDTO donationCategoryDTO);
+    int editCategory(Long categoryId, DonationCategoryDTO donationCategoryDTO);
 
     String deleteCategory(Long categoryId);
 }

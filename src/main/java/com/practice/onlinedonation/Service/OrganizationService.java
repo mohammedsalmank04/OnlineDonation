@@ -13,7 +13,7 @@ public interface OrganizationService {
 
     OrganizationDTO editOrganization(Long organizationId,Long categoryId ,OrganizationDTO organization);
 
-    OrganizationDTO editOrganization1(Long organizationId, OrganizationDTO organization);
+    int editOrganization1(Long organizationId, OrganizationDTO organization);
 
     Optional<Organization> findById(Long id);
 }
