@@ -1,21 +1,15 @@
 package com.practice.onlinedonation.Controller;
 
-import com.practice.onlinedonation.Model.Donation;
+import com.practice.onlinedonation.Service.AuthenticateService;
 import com.practice.onlinedonation.Service.DonationCategoryService;
 import com.practice.onlinedonation.Service.DonationService;
 import com.practice.onlinedonation.Service.OrganizationService;
 import com.practice.onlinedonation.payload.*;
-import com.practice.onlinedonation.payload.donationByUserDTO.DonationByUserDTO;
-import com.practice.onlinedonation.payload.donationByUserDTO.DonationDetailsByUserDTOLi;
-import com.practice.onlinedonation.security.UserDetails.UserDetailsImpl;
 import com.practice.onlinedonation.stripe.config.StatusCodes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -27,20 +21,11 @@ public class DonationController {
     private DonationCategoryService donationCategoryService;
     @Autowired
     private OrganizationService organizationService;
+    @Autowired
+    private AuthenticateService authenticateService;
 
 
 
-    //Method handles making a donation
-    @PostMapping("/donation/{userId}/{organizationId}")
-    public ResponseEntity<String> makeDonation(
-            @PathVariable Long userId,
-            @RequestBody DonationDTO donationDTO,
-            @PathVariable Long organizationId
-    ){
-
-        donationService.makeDonation(userId,donationDTO,organizationId);
-        return new ResponseEntity<>("Donation success", HttpStatus.OK);
-    }
 
     // Gets all the donation along with the user and also organization
     @GetMapping("/donation")
@@ -68,7 +53,7 @@ public class DonationController {
     }
 
     //This method get All categories
-    @GetMapping("/categories")
+    @GetMapping("/admin/categories")
     public ResponseEntity<CategoryResponseDTO> getAllCategories(){
         CategoryResponseDTO categoryResponseDTO = donationCategoryService.getALlCategory();
         return new ResponseEntity<>(categoryResponseDTO, HttpStatus.OK);
@@ -76,12 +61,20 @@ public class DonationController {
 
     //This method edits the name of category
     @PutMapping("/admin/category/{categoryId}")
-    public ResponseEntity<DonationCategoryDTO> editCategory(
+    public ResponseEntity<String> editCategory(
             @PathVariable Long categoryId,
             @RequestBody DonationCategoryDTO donationCategoryDTO
             ){
-        DonationCategoryDTO editedCategory = donationCategoryService.editCategory(categoryId, donationCategoryDTO);
-        return new ResponseEntity<>(editedCategory,HttpStatus.CREATED);
+        int status = donationCategoryService.editCategory(categoryId, donationCategoryDTO);
+        if(status == 1) {
+            return new ResponseEntity<>(
+                    "Category name Updated to: " + donationCategoryDTO.getCategoryName(),
+                    HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(
+                "Category ID not present: " + categoryId,
+                HttpStatus.BAD_REQUEST
+        );
     }
 
     // This method gets all the organization
@@ -94,13 +87,20 @@ public class DonationController {
 
     //This method edit organization
     @PutMapping("/admin/organization/{organizationId}")
-    public ResponseEntity<OrganizationDTO> editOrganization(
+    public ResponseEntity<String> editOrganization(
             @PathVariable Long organizationId,
            // @PathVariable Long categoryId,
             @RequestBody OrganizationDTO organization
             ){
-        OrganizationDTO newOrganization = organizationService.editOrganization1(organizationId,organization);
-        return new ResponseEntity<>(newOrganization, HttpStatus.CREATED);
+        int status = organizationService.editOrganization1(organizationId,organization);
+        if(status == 1) {
+            return new ResponseEntity<>(
+                    "Organization Name Updated: " + organization.getOrganizationName(),
+                    HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(
+                "No organization found with ID: " + organizationId,
+                HttpStatus.BAD_REQUEST);
 
     }
 
@@ -110,6 +110,31 @@ public class DonationController {
             @PathVariable Long categoryId){
         String status = donationCategoryService.deleteCategory(categoryId);
         return new ResponseEntity<>(status,HttpStatus.OK);
+    }
+
+    //Get the donation made by current user Return only payment succeeded donations
+    @GetMapping("/public/donation")
+    public ResponseEntity<DonationDetailsByUserResponseDTO> getDonationByUserEntity(){
+        UserResponseDTO currentUser = authenticateService.getCurrentUser();
+        String code = String.valueOf(StatusCodes.succeeded);
+        DonationDetailsByUserResponseDTO ddByUser = donationService
+                .getDonationByUserEntitySucceeded(currentUser.getUserId(), code);
+
+        return new ResponseEntity<>(ddByUser,HttpStatus.OK);
+    }
+
+
+    //----------------TESTING METHODS------------------
+    //Method handles making a donation
+    @PostMapping("/donation/{userId}/{organizationId}")
+    public ResponseEntity<String> makeDonation(
+            @PathVariable Long userId,
+            @RequestBody DonationDTO donationDTO,
+            @PathVariable Long organizationId
+    ){
+
+        donationService.makeDonation(userId,donationDTO,organizationId);
+        return new ResponseEntity<>("Donation success", HttpStatus.OK);
     }
 
     //This method gets a donation made by a specific user
@@ -136,16 +161,6 @@ public class DonationController {
         List<Donation> li = donationService.getDonationByUserEntity(userId);
         return new ResponseEntity<>(li,HttpStatus.OK);
     }*/
-
-    @GetMapping("/public/donation")
-    public ResponseEntity<DonationDetailsByUserResponseDTO> getDonationByUserEntity(Authentication authentication){
-        UserDetailsImpl currentUser = (UserDetailsImpl) authentication.getPrincipal();
-        String code = String.valueOf(StatusCodes.succeeded);
-
-        DonationDetailsByUserResponseDTO ddByUser = donationService.getDonationByUserEntitySucceeded(currentUser.getId(), code);
-        return new ResponseEntity<>(ddByUser,HttpStatus.OK);
-    }
-
 
 
 

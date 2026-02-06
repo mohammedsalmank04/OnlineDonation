@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DonationDetailsByUserDTO {
 
-
-
     private Integer donationId;
     private String description;
     private Long donationAmount;

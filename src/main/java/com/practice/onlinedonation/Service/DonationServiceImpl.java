@@ -10,7 +10,7 @@ import com.practice.onlinedonation.Repository.DonationRepository;
 import com.practice.onlinedonation.Repository.OrganizationRepository;
 import com.practice.onlinedonation.Repository.UserRepository;
 import com.practice.onlinedonation.payload.*;
-import com.practice.onlinedonation.payload.donationByUserDTO.*;
+import com.practice.onlinedonation.payload.donationByUserDTONotInUse.*;
 import com.practice.onlinedonation.stripe.payload.PaymentReqeuestDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -205,6 +205,7 @@ public class DonationServiceImpl implements DonationService {
         if (li.isEmpty()) {
             throw new RuntimeException("There are no donation made by user with user ID: " + userId);
         }
+
         DonationDetailsByUserResponseDTO ddByUser = new DonationDetailsByUserResponseDTO();
         User user = li.getFirst().getUser();
         ddByUser.setUserDTO(modelMapper.map(user, UserDTO.class));

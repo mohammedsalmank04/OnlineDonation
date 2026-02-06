@@ -2,7 +2,7 @@ package com.practice.onlinedonation.Service;
 
 import com.practice.onlinedonation.Model.Donation;
 import com.practice.onlinedonation.payload.DonationDetailsByUserResponseDTO;
-import com.practice.onlinedonation.payload.donationByUserDTO.DonationByUserDTO;
+import com.practice.onlinedonation.payload.donationByUserDTONotInUse.DonationByUserDTO;
 import com.practice.onlinedonation.payload.DonationDTO;
 import com.practice.onlinedonation.payload.DonationResponseDTO;
 import com.practice.onlinedonation.stripe.payload.PaymentReqeuestDTO;

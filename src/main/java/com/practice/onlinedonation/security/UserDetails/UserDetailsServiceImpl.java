@@ -23,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = userRepository.findByEmail(userName).orElseThrow(
                 () -> new ResourceNotFoundException("User","Email: ", userName)
         );
-        log.info("Called loadUserName {}" ,count++ );
+        //log.info("Called loadUserName {}" ,count++ );
         return UserDetailsImpl.build(user);
     }
 }

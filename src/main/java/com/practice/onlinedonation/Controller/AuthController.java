@@ -1,8 +1,9 @@
 package com.practice.onlinedonation.Controller;
 
+import com.practice.onlinedonation.Exception.ApiException;
+import com.practice.onlinedonation.Repository.UserRepository;
 import com.practice.onlinedonation.Service.AuthenticateService;
-import com.practice.onlinedonation.payload.UserDTO;
-import com.practice.onlinedonation.security.UserDetails.UserDetailsImpl;
+import com.practice.onlinedonation.payload.UserResponseDTO;
 import com.practice.onlinedonation.security.jwt.JwtService;
 import com.practice.onlinedonation.security.payload.LoginRequest;
 import com.practice.onlinedonation.security.payload.LoginResponse;
@@ -14,7 +15,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,43 +28,40 @@ public class AuthController {
     @Autowired
     private JwtService jwtService;
     @Autowired
-    private ModelMapper mapper;
+    private UserRepository userRepository;
 
+    //Register new user using email as a unique element
     @PostMapping("/auth/signUp")
     public ResponseEntity<LoginResponse> register(@RequestBody SignUpRequest user){
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new ApiException("User " + user.getEmail() +" Already exists" );
+
+        }
         LoginResponse loginResponse = authenticateService.signUp(user);
         return new ResponseEntity<>(loginResponse,HttpStatus.CREATED );
 
     }
 
-    /*@PostMapping("/auth/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
-        LoginResponse login = authenticateService.login(loginRequest);
-        return new ResponseEntity<>(login, HttpStatus.OK);
-
-    }*/
-
+    //Login user using cookies
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
         return authenticateService.loginUsingCookie(loginRequest);
 
-
     }
 
-
-
+    //Get the current logged-in user object
     @GetMapping("/api/auth/me")
-    public UserDTO currentUserName(Authentication authentication){
-        if(authentication != null){
-            UserDetailsImpl u = (UserDetailsImpl) authentication.getPrincipal();
-            log.info("Getting the logged in user {}", u);
-             return mapper.map(u, UserDTO.class);
-
+    public ResponseEntity<?> currentUser(){
+        UserResponseDTO currentUser = authenticateService.getCurrentUser();
+        if(currentUser != null){
+            return new ResponseEntity<>(currentUser, HttpStatus.OK);
         }
-
-        return null;
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                "Please log in again"
+        );
     }
 
+    //Logged out of current user
     @PostMapping("/auth/signout")
     public ResponseEntity<?> signOutUser(){
         ResponseCookie cookie = jwtService.getCleanCookie();
@@ -72,10 +69,9 @@ public class AuthController {
                 .ok()
                 .header(HttpHeaders.SET_COOKIE,cookie.toString())
                 .body(
-                        "You have Been Signed out"
+                        "Logged out successfully"
                 );
 
     }
-
 
 }

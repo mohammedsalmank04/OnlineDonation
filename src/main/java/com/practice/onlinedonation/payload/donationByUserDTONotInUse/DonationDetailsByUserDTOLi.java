@@ -1,4 +1,4 @@
-package com.practice.onlinedonation.payload.donationByUserDTO;
+package com.practice.onlinedonation.payload.donationByUserDTONotInUse;
 
 import com.practice.onlinedonation.payload.DonationDetailsByUserDTO;
 import lombok.AllArgsConstructor;

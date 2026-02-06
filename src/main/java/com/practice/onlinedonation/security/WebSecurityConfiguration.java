@@ -67,6 +67,7 @@ public class WebSecurityConfiguration {
                         .requestMatchers("/api/stripe-webhooks/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/api/user").permitAll()
 
 
                         .requestMatchers("/login.html").permitAll()

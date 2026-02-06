@@ -131,6 +131,7 @@ public class JwtService {
     public ResponseCookie getCleanCookie(){
         ResponseCookie cookie = ResponseCookie.from(jwtCookie,null)
                 .path("/")
+                .maxAge(0)
                 .build();
         return cookie;
     }

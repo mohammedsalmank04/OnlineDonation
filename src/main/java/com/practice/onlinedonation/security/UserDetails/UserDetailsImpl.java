@@ -22,6 +22,7 @@ public class UserDetailsImpl implements UserDetails {
     private String email;
     private String firstName;
     private String lastName;
+    private String phoneNumber;
 
     public static UserDetailsImpl build(User user){
         return new UserDetailsImpl(
@@ -30,7 +31,8 @@ public class UserDetailsImpl implements UserDetails {
                 user.getPassword(),
                 user.getEmail(),
                 user.getFirstName(),
-                user.getLastName()
+                user.getLastName(),
+                user.getPhoneNumber()
         );
     }
 
