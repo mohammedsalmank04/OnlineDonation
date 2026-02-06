@@ -1,7 +1,10 @@
 package com.practice.onlinedonation.Service;
 
 import com.practice.onlinedonation.Exception.ResourceNotFoundException;
+import com.practice.onlinedonation.Model.AppRole;
+import com.practice.onlinedonation.Model.Role;
 import com.practice.onlinedonation.Model.User;
+import com.practice.onlinedonation.Repository.RoleRepository;
 import com.practice.onlinedonation.Repository.UserRepository;
 import com.practice.onlinedonation.payload.UserResponseDTO;
 import com.practice.onlinedonation.security.UserDetails.UserDetailsImpl;
@@ -24,8 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -41,6 +43,8 @@ public class AuthenticateServiceImpl implements AuthenticateService{
     private AuthenticationManager authenticationManager;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private RoleRepository roleRepository;
 
     static int count = 0;
 
@@ -48,6 +52,42 @@ public class AuthenticateServiceImpl implements AuthenticateService{
     public LoginResponse signUp(SignUpRequest user) {
         User u = modelMapper.map(user,User.class);
         u.setPassword(passwordEncoder.encode(u.getPassword()));
+
+        Set<String> roles = user.getRole();
+        Set<Role> enumRoles = new HashSet<>();
+
+        if(roles == null){
+            Role role = roleRepository.findByRoleName(AppRole.ROLE_USER).orElseThrow(
+                    () -> new RuntimeException("Error: Role not found" )
+            );
+            role.setRoleName(AppRole.ROLE_USER);
+            enumRoles.add(role);
+        }else{
+            roles.forEach(
+                    r -> {
+                        switch (r){
+                            case "admin":
+                                Role role = roleRepository.findByRoleName(AppRole.ROLE_ADMIN).orElseThrow(
+                                        () -> new RuntimeException("Error: Role not found" )
+                                );
+
+                                enumRoles.add(role);
+                                break;
+                            case "user":
+                                Role adminRole = roleRepository.findByRoleName(AppRole.ROLE_USER).orElseThrow(
+                                        () -> new RuntimeException("Error: Role not found" )
+                                );
+
+                                enumRoles.add(adminRole);
+                                break;
+
+
+
+                        }
+                    }
+            );
+        }
+        u.setRole(enumRoles);
         return modelMapper.map(userRepository.save(u), LoginResponse.class);
     }
 
@@ -78,10 +118,13 @@ public class AuthenticateServiceImpl implements AuthenticateService{
             );
         }
         ResponseCookie jwtCookie = jwtService.generateJwtCookie(userDetails);
-
-
+        List<String> roles = userDetails.getAuthorities().stream().map(
+                i -> i.getAuthority()
+        ).toList();
+        UserResponseDTO response = modelMapper.map(userDetails,UserResponseDTO.class);
+        response.setRoles(roles);
         return  ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,jwtCookie.toString()).body(
-                modelMapper.map(userDetails,UserResponseDTO.class)
+                response
         );
     }
 

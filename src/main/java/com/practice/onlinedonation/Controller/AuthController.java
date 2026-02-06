@@ -32,9 +32,9 @@ public class AuthController {
 
     //Register new user using email as a unique element
     @PostMapping("/auth/signUp")
-    public ResponseEntity<LoginResponse> register(@RequestBody SignUpRequest user){
+    public ResponseEntity<?> register(@RequestBody SignUpRequest user){
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new ApiException("User " + user.getEmail() +" Already exists" );
+            return ResponseEntity.badRequest().body("Error: username already exists");
 
         }
         LoginResponse loginResponse = authenticateService.signUp(user);

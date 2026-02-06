@@ -60,6 +60,7 @@ public class WebSecurityConfiguration {
                 auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/checkout.html/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/payment/checkout").permitAll()
                         .requestMatchers("/api/payment/success").permitAll()
                         .requestMatchers("/api/payment/cancel").permitAll()
@@ -67,7 +68,7 @@ public class WebSecurityConfiguration {
                         .requestMatchers("/api/stripe-webhooks/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()
-                        .requestMatchers("/api/user").permitAll()
+                        /*.requestMatchers("/api/user").permitAll()*/
 
 
                         .requestMatchers("/login.html").permitAll()
