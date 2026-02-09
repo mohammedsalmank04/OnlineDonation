@@ -101,10 +101,14 @@ public class AuthenticateServiceImpl implements AuthenticateService{
             authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
         } catch (AuthenticationException exception) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("Message", "Bad Credentials");
-            map.put("Status", false);
-            return new ResponseEntity<Object>(map, HttpStatus.NOT_FOUND);
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    Map.of(
+                            "Message", "Bad Credentials",
+                            "Status", false
+                    )
+            );
+            //return new ResponseEntity<Object>(map, HttpStatus.NOT_FOUND);
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
