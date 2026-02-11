@@ -16,5 +16,7 @@ public class PaymentReqeuestDTO {
     private String description;
 
 
-
+    public void setDonationAmount(long donationAmount) {
+        this.donationAmount = donationAmount / 100;
+    }
 }
