@@ -33,4 +33,6 @@ public interface DonationService{
 
     //Method to get only succeeded payments
     DonationDetailsByUserResponseDTO getDonationByUserEntitySucceeded(Long userId, String status);
+
+    Donation findDonationById(String donationId);
 }

@@ -183,7 +183,8 @@ public class DonationServiceImpl implements DonationService {
 
         );
         d.setOrganization(o);
-        d.setStatus("PAYMENT_INTENT");
+       // d.setStatus("PAYMENT_INTENT");
+        d.setStatus("succeeded");
         d.setDescription(prDTO.getDescription());
         return donationRepository.save(d);
 
@@ -225,4 +226,14 @@ public class DonationServiceImpl implements DonationService {
         ddByUser.setLi(resultList);
         return ddByUser;
     }
-}
+
+    @Override
+    public Donation findDonationById(String donationId) {
+
+        return donationRepository.findById(Long.parseLong(donationId)).orElseThrow(
+                () -> new ResourceNotFoundException("Donation", "Donation ID: ", Long.parseLong(donationId))
+        );
+    }
+
+    }
+

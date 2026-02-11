@@ -1,11 +1,13 @@
 package com.practice.onlinedonation.Controller;
 
+import com.practice.onlinedonation.Model.Donation;
 import com.practice.onlinedonation.Service.AuthenticateService;
 import com.practice.onlinedonation.Service.DonationCategoryService;
 import com.practice.onlinedonation.Service.DonationService;
 import com.practice.onlinedonation.Service.OrganizationService;
 import com.practice.onlinedonation.payload.*;
 import com.practice.onlinedonation.stripe.config.StatusCodes;
+import com.practice.onlinedonation.stripe.payload.PaymentReqeuestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -121,6 +123,12 @@ public class DonationController {
                 .getDonationByUserEntitySucceeded(currentUser.getUserId(), code);
 
         return new ResponseEntity<>(ddByUser,HttpStatus.OK);
+    }
+
+    @PostMapping("/test/makeDonation")
+    public ResponseEntity<?> stressTestDonation(@RequestBody PaymentReqeuestDTO paymentReqeuestDTO){
+       Donation d =  donationService.createDonation(paymentReqeuestDTO);
+       return ResponseEntity.status(HttpStatus.CREATED).body("Donation Created");
     }
 
 

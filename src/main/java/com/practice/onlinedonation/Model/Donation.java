@@ -28,11 +28,18 @@ public class Donation {
     @JoinColumn
     private Organization organization;
 
+    @OneToOne(mappedBy = "donation")
+    private Payment  payment;
+
 
     public Donation(String description, Long donationAmount, User user) {
         this.description = description;
-        this.donationAmount = donationAmount;
+        this.donationAmount = donationAmount/100;
         this.user =user;
+    }
+
+    public void setDonationAmount(Long donationAmount) {
+        this.donationAmount = donationAmount/100;
     }
 
     @Override
