@@ -35,4 +35,6 @@ public interface DonationService{
     DonationDetailsByUserResponseDTO getDonationByUserEntitySucceeded(Long userId, String status);
 
     Donation findDonationById(String donationId);
+
+    void cleanTestingDatabase();
 }
