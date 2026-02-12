@@ -68,7 +68,8 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
             @Param("status") String status
                       );
 
-
+    @Transactional
+    void deleteByDescription(String description);
 }
 
 

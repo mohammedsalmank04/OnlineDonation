@@ -235,5 +235,11 @@ public class DonationServiceImpl implements DonationService {
         );
     }
 
+    @Override
+    public void cleanTestingDatabase() {
+        String description = "stress testing donation";
+        donationRepository.deleteByDescription(description);
     }
+
+}
 
