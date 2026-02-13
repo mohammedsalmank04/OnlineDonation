@@ -12,13 +12,19 @@ import com.practice.onlinedonation.Repository.UserRepository;
 import com.practice.onlinedonation.payload.*;
 import com.practice.onlinedonation.payload.donationByUserDTONotInUse.*;
 import com.practice.onlinedonation.stripe.payload.PaymentReqeuestDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class DonationServiceImpl implements DonationService {
     @Autowired
@@ -197,21 +203,31 @@ public class DonationServiceImpl implements DonationService {
 
     //Method to get only succeeded payments
     @Override
-    public DonationDetailsByUserResponseDTO getDonationByUserEntitySucceeded(Long userId, String status) {
+    public DonationPageResponse getDonationByUserEntitySucceeded(
+            Long userId, String status,
+            Integer pageNumber, Integer pageSize, String sortBy, String orderBy
+    ) {
+        Sort sortByAndOrder = orderBy.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageDetails = PageRequest.of(pageNumber,pageSize,sortByAndOrder);
+        Page<Donation> donationPage = donationRepository.findByStatusAndUser_UserId(status,userId,pageDetails);
+        List<Donation> donations = donationPage.getContent();
 
 
-        List<Donation> li = donationRepository.findByStatusAndUser_UserId(status,userId);
+        /*List<Donation> li = donationRepository.findByStatusAndUser_UserId(status,userId, pageDetails);*/
 
 
-        if (li.isEmpty()) {
+        if (donations.isEmpty()) {
             throw new RuntimeException("There are no donation made by user with user ID: " + userId);
         }
 
-        DonationDetailsByUserResponseDTO ddByUser = new DonationDetailsByUserResponseDTO();
-        User user = li.getFirst().getUser();
-        ddByUser.setUserDTO(modelMapper.map(user, UserDTO.class));
+        //DonationDetailsByUserResponseDTO ddByUser = new DonationDetailsByUserResponseDTO();
+        User user = donations.getFirst().getUser();
+       // ddByUser.setUserDTO(modelMapper.map(user, UserDTO.class));
 
-        List<DonationDetailsByUserDTO> resultList = li.stream().map(
+        DonationPageResponse response = new DonationPageResponse();
+        response.setUserDTO(modelMapper.map(user, UserDTO.class));
+
+        List<DonationDetailsByUserDTO> resultList = donations.stream().map(
                 donation -> new DonationDetailsByUserDTO(
                         donation.getDonationId(),
                         donation.getDescription(),
@@ -220,11 +236,21 @@ public class DonationServiceImpl implements DonationService {
                         donation.getOrganization()
                                 .getDonationCategory()
                                 .getCategoryName()
+
+
                 )
 
+
         ).toList();
-        ddByUser.setLi(resultList);
-        return ddByUser;
+        log.info("Testing page number: " + donationPage.getNumber());
+        log.info("Testing client page number: " + pageNumber);
+        response.setPageNumber(pageNumber);
+        response.setPageSize(pageSize);
+        response.setTotalElements(donationPage.getTotalElements());
+        response.setTotalPages(donationPage.getTotalPages());
+        response.setLastPage(donationPage.isLast());
+        response.setDonationList(resultList);
+        return response;
     }
 
     @Override

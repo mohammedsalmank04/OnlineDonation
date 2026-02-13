@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 
 import java.util.Optional;
@@ -32,6 +33,9 @@ public class AuthControllerTest {
     private UserRepository userRepository;
     @Mock
     private AuthenticateService authenticateService;
+    @Mock
+   JavaMailSender javaMailSender;
+
 
 
     @Test

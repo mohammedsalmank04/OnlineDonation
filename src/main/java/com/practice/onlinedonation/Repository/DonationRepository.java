@@ -4,7 +4,8 @@ import com.practice.onlinedonation.Model.Donation;
 import com.practice.onlinedonation.Model.User;
 import com.practice.onlinedonation.payload.DonationDetailsByUserDTO;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.NotBlank;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -12,7 +13,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface DonationRepository extends JpaRepository<Donation, Long> {
     List<Donation> findByUser(User userId);
@@ -51,6 +51,15 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     )
     List<Donation> findAll();
 
+    /*@EntityGraph(
+            attributePaths = {
+                    "user",
+                    "organization",
+                    "organization.donationCategory"
+            }
+    )
+    List<Donation> findByStatusAndUser_UserId(String status, Long userId);*/
+
     @EntityGraph(
             attributePaths = {
                     "user",
@@ -58,7 +67,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
                     "organization.donationCategory"
             }
     )
-    List<Donation> findByStatusAndUser_UserId(String status, Long userId);
+    Page<Donation> findByStatusAndUser_UserId(String status, Long userId, Pageable pageDetails);
 
     @Transactional
     @Modifying

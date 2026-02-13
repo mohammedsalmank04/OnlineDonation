@@ -2,6 +2,7 @@ package com.practice.onlinedonation.Service;
 
 import com.practice.onlinedonation.Model.Donation;
 import com.practice.onlinedonation.payload.DonationDetailsByUserResponseDTO;
+import com.practice.onlinedonation.payload.DonationPageResponse;
 import com.practice.onlinedonation.payload.donationByUserDTONotInUse.DonationByUserDTO;
 import com.practice.onlinedonation.payload.DonationDTO;
 import com.practice.onlinedonation.payload.DonationResponseDTO;
@@ -31,8 +32,14 @@ public interface DonationService{
 
     void updateStatusOfPayment(long donationId, String status);
 
+    /*//Method to get only succeeded payments
+    DonationDetailsByUserResponseDTO getDonationByUserEntitySucceeded(Long userId, String status);*/
+
     //Method to get only succeeded payments
-    DonationDetailsByUserResponseDTO getDonationByUserEntitySucceeded(Long userId, String status);
+    DonationPageResponse getDonationByUserEntitySucceeded(
+            Long userId, String status,
+            Integer pageNumber, Integer pageSize, String sortBy, String orderBy
+    );
 
     Donation findDonationById(String donationId);
 
