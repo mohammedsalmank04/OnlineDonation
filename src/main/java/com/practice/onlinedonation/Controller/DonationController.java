@@ -5,6 +5,7 @@ import com.practice.onlinedonation.Service.AuthenticateService;
 import com.practice.onlinedonation.Service.DonationCategoryService;
 import com.practice.onlinedonation.Service.DonationService;
 import com.practice.onlinedonation.Service.OrganizationService;
+import com.practice.onlinedonation.config.PaginationConstants;
 import com.practice.onlinedonation.payload.*;
 import com.practice.onlinedonation.stripe.config.StatusCodes;
 import com.practice.onlinedonation.stripe.payload.PaymentReqeuestDTO;
@@ -116,11 +117,16 @@ public class DonationController {
 
     //Get the donation made by current user Return only payment succeeded donations
     @GetMapping("/public/donation")
-    public ResponseEntity<DonationDetailsByUserResponseDTO> getDonationByUserEntity(){
+    public ResponseEntity<DonationPageResponse> getDonationByUserEntity(
+            @RequestParam(defaultValue = PaginationConstants.pageNumber, required = false) Integer pageNumber,
+            @RequestParam(defaultValue = PaginationConstants.pageSize, required = false) Integer pageSize,
+            @RequestParam(defaultValue = PaginationConstants.SORT_CATEGORY_BY,required = false) String sortBy,
+            @RequestParam(defaultValue = PaginationConstants.SORT_DIR, required = false) String orderBy
+    ){
         UserResponseDTO currentUser = authenticateService.getCurrentUser();
         String code = String.valueOf(StatusCodes.succeeded);
-        DonationDetailsByUserResponseDTO ddByUser = donationService
-                .getDonationByUserEntitySucceeded(currentUser.getUserId(), code);
+        DonationPageResponse ddByUser = donationService
+                .getDonationByUserEntitySucceeded(currentUser.getUserId(), code,pageNumber,pageSize,sortBy,orderBy);
 
         return new ResponseEntity<>(ddByUser,HttpStatus.OK);
     }
