@@ -1,0 +1,480 @@
+{
+  "info": {
+    "_postman_id": "2db042c2-8cf9-4e44-a6c1-4943a6193987",
+    "name": "Donation",
+    "description": "# Donation API\n\nThe Donation API provides a comprehensive platform for managing charitable donations, organizations, categories, and users. This RESTful API enables applications to facilitate donation workflows between donors and charitable organizations.\n\n## Base URL\n\nAll API requests should be made to:\n```\n{{Base_url}}\n```\n\nThe base URL is configured in the **Donation** environment.\n\n## Getting Started\n\n1. Set up the `Base_url` variable in your environment (default: `http://localhost:8080`)\n2. Create a user account using the User endpoints\n3. Browse available organizations and categories\n4. Make donations to your chosen organizations\n\n## API Structure\n\nThe API is organized into three main resource groups:\n\n| Resource | Description |\n|----------|-------------|\n| **User** | User registration and management |\n| **Donation** | Core donation operations - viewing and making donations |\n| **Category** | Organization categories and administrative operations for organizations |\n\n## Authentication\n\nSome endpoints require admin privileges (prefixed with `/api/admin/`), while others are publicly accessible (`/api/public/`) or require standard user authentication (`/api/donation/`, `/api/user/`).\n\n## Response Format\n\nAll responses are returned in JSON format. Successful operations typically return the created/updated resource, while errors return appropriate HTTP status codes with error details.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "user",
+      "item": [
+        {
+          "name": "Create User",
+          "id": "6ed1fb40-eba2-4d9c-acf1-29f388b7ea4c",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\" : \"msk@msk.com\",\r\n    \"username\" : \"msk1\",\r\n    \"firstName\" : \"Mohammed Salman\",\r\n    \"lastName\": \"Khan\",\r\n    \"phoneNumber\" : \"9553429425\",\r\n    \"password\" : \"msk123\"\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/auth/signUp",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "auth",
+                "signUp"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "id": "4f8c5300-1438-4078-ab98-767b5a9912ab",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"msk@msk.com\",\r\n  \"password\": \"msk123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Sign out current user",
+          "id": "f909b801-c5bb-4bfb-a40d-d577d1972a0e",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/auth/signout",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "auth",
+                "signout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "940ff30e-f288-4cb3-9907-8f76360816da"
+    },
+    {
+      "name": "donation",
+      "item": [
+        {
+          "name": "Get All Donation",
+          "id": "5fa8c834-d832-45b9-bac2-288f2b6349cf",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/donation",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "donation"
+              ]
+            },
+            "description": "## Get All Donations\n\nRetrieves a list of all donations made through the platform. This endpoint allows users to view donation history and track charitable contributions.\n\n### Endpoint\n`GET /api/donation`\n\n### Request Parameters\nThis endpoint does not require any parameters.\n\n### Expected Responses\n\n| Status | Description |\n|--------|-------------|\n| `200 OK` | Returns an array of donation records |\n| `401 Unauthorized` | Authentication required |\n\n### Response Body\nReturns an array of donation objects containing:\n- Donation ID\n- Donor information\n- Organization details\n- Donation amount\n- Description/purpose\n- Timestamp\n\n### Notes\n- Results may be paginated for large datasets\n- Use this endpoint to display donation history or generate reports"
+          },
+          "response": []
+        },
+        {
+          "name": "Make Donation",
+          "id": "b2540f7d-056c-4b55-9770-f965fce273b1",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"description\" : \"Donation Made against Good Cause\",\r\n    \"donationAmount\" : 300\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/donation/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "donation",
+                "1"
+              ]
+            },
+            "description": "## Make Donation\n\nCreates a new donation to a specific organization. This is the core endpoint for processing charitable contributions.\n\n### Endpoint\n`POST /api/donation/{organizationId}`\n\n### Path Parameters\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| `organizationId` | integer | Yes | The ID of the organization receiving the donation |\n\n### Request Body\n\n| Field | Type | Required | Description |\n|-------|------|----------|-------------|\n| `description` | string | Yes | Purpose or message for the donation |\n| `donationAmount` | number | Yes | Amount to donate (in currency units) |\n\n### Example Request Body\n```json\n{\n    \"description\": \"Donation Made against Good Cause\",\n    \"donationAmount\": 300\n}\n```\n\n### Expected Responses\n\n| Status | Description |\n|--------|-------------|\n| `201 Created` | Donation successfully processed |\n| `400 Bad Request` | Invalid donation amount or missing fields |\n| `404 Not Found` | Organization not found |\n| `401 Unauthorized` | User authentication required |\n\n### Notes\n- Donation amount must be a positive number\n- The organization must exist and be active to receive donations\n- User must be authenticated to make a donation"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Donation of current user",
+          "id": "58797862-95c4-411c-89d1-bc93acfeb0dc",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/public/donation",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "public",
+                "donation"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "0d405056-f317-4103-8749-798f7df478d9"
+    },
+    {
+      "name": "category",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "id": "59ff76ee-4fa7-4adb-ac57-8801fce0d412",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/admin/categories",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "admin",
+                "categories"
+              ]
+            },
+            "description": "## Get All Categories\n\nRetrieves all donation categories from the system. This is an **admin-only** endpoint used for managing and viewing organization categories.\n\n### Endpoint\n`GET /api/admin/category`\n\n### Authorization\n🔒 **Admin privileges required**\n\n### Request Parameters\nThis endpoint does not require any parameters.\n\n### Expected Responses\n\n| Status | Description |\n|--------|-------------|\n| `200 OK` | Returns an array of all categories |\n| `401 Unauthorized` | Authentication required |\n| `403 Forbidden` | Admin privileges required |\n\n### Response Body\nReturns an array of category objects containing:\n- Category ID\n- Category name\n- Associated organizations count\n- Creation/update timestamps\n\n### Notes\n- This endpoint is restricted to administrators\n- Use this to manage the category taxonomy for organizations"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Cateogry",
+          "id": "b1b32d12-ee7f-485f-b55c-4a683897d381",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"organizationName\" : \"Govt Hospital\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/admin/category/2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "admin",
+                "category",
+                "2"
+              ]
+            },
+            "description": "## Delete Category\n\nRemoves a category from the system. This is an **admin-only** endpoint for managing the category taxonomy.\n\n### Endpoint\n`DELETE /api/admin/category/{categoryId}`\n\n### Authorization\n🔒 **Admin privileges required**\n\n### Path Parameters\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| `categoryId` | integer | Yes | The ID of the category to delete |\n\n### Expected Responses\n\n| Status | Description |\n|--------|-------------|\n| `200 OK` | Category successfully deleted |\n| `404 Not Found` | Category not found |\n| `403 Forbidden` | Admin privileges required |\n| `409 Conflict` | Category has associated organizations and cannot be deleted |\n\n### Notes\n- Only administrators can delete categories\n- Categories with associated organizations may need to be reassigned before deletion\n- This action is irreversible"
+          },
+          "response": []
+        },
+        {
+          "name": "Edit Category",
+          "id": "de33ca34-12c0-42c8-b4bd-bd58ff852745",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"categoryName\" : \"Health & Hospitals\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/admin/category/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "admin",
+                "category",
+                "1"
+              ]
+            },
+            "description": "## Edit Category\n\nUpdates an existing category's details. This is an **admin-only** endpoint for managing the category taxonomy.\n\n### Endpoint\n`PUT /api/admin/category/{categoryId}`\n\n### Authorization\n🔒 **Admin privileges required**\n\n### Path Parameters\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| `categoryId` | integer | Yes | The ID of the category to update |\n\n### Request Body\n\n| Field | Type | Required | Description |\n|-------|------|----------|-------------|\n| `categoryName` | string | Yes | Updated name for the category |\n\n### Example Request Body\n```json\n{\n    \"categoryName\": \"Health & Hospitals\"\n}\n```\n\n### Expected Responses\n\n| Status | Description |\n|--------|-------------|\n| `200 OK` | Category successfully updated |\n| `400 Bad Request` | Invalid input data |\n| `404 Not Found` | Category not found |\n| `403 Forbidden` | Admin privileges required |\n| `409 Conflict` | Category name already exists |\n\n### Notes\n- Only administrators can modify category details\n- Category names should be unique across the system\n- Updating a category name affects all associated organizations' categorization"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Category",
+          "id": "339237f8-940a-4250-a31b-084a2266a94c",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"categoryName\" : \"Health\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/donation/category",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "donation",
+                "category"
+              ]
+            },
+            "description": "## Create Category\n\nCreates a new category for organizing charitable organizations. Categories help donors find organizations by cause type.\n\n### Endpoint\n`POST /api/donation/category`\n\n### Request Body\n\n| Field | Type | Required | Description |\n|-------|------|----------|-------------|\n| `categoryName` | string | Yes | Name of the new category |\n\n### Example Request Body\n```json\n{\n    \"categoryName\": \"Health\"\n}\n```\n\n### Expected Responses\n\n| Status | Description |\n|--------|-------------|\n| `201 Created` | Category successfully created |\n| `400 Bad Request` | Invalid input data or missing required fields |\n| `409 Conflict` | Category with this name already exists |\n\n### Notes\n- Category names should be descriptive and unique\n- Common categories include: Health, Education, Environment, Disaster Relief, etc.\n- Once created, organizations can be assigned to this category"
+          },
+          "response": []
+        }
+      ],
+      "id": "ceb8a4bd-c1e9-4bb2-81e7-a25135ed72ba"
+    },
+    {
+      "name": "Organization",
+      "item": [
+        {
+          "name": "Get All Organization",
+          "id": "1474889d-3d46-4f67-b024-fec3e378324f",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/public/organization",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "public",
+                "organization"
+              ]
+            },
+            "description": "## Get All Organizations\n\nRetrieves a list of all charitable organizations registered in the platform. This is a **public endpoint** accessible without authentication.\n\n### Endpoint\n`GET /api/public/organization`\n\n### Authorization\n🌐 **Public access** - No authentication required\n\n### Request Parameters\nThis endpoint does not require any parameters.\n\n### Expected Responses\n\n| Status | Description |\n|--------|-------------|\n| `200 OK` | Returns an array of all organizations |\n\n### Response Body\nReturns an array of organization objects containing:\n- Organization ID\n- Organization name\n- Category information\n- Total donations received\n- Creation timestamp\n\n### Notes\n- This endpoint is publicly accessible for browsing available organizations\n- Use this to display a list of organizations users can donate to\n- Results may include pagination for large datasets"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Organization",
+          "id": "96b78282-d731-4ee5-858d-92ac193aee7b",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"organizationName\" : \"Govt school\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/organization/2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "organization",
+                "2"
+              ]
+            },
+            "description": "## Create Organization\n\nCreates a new charitable organization under a specific category. Organizations are the recipients of donations in the platform.\n\n### Endpoint\n`POST /api/organization/{categoryId}`\n\n### Path Parameters\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| `categoryId` | integer | Yes | The category ID to assign the new organization to |\n\n### Request Body\n\n| Field | Type | Required | Description |\n|-------|------|----------|-------------|\n| `organizationName` | string | Yes | Name of the organization |\n\n### Example Request Body\n```json\n{\n    \"organizationName\": \"Govt school\"\n}\n```\n\n### Expected Responses\n\n| Status | Description |\n|--------|-------------|\n| `201 Created` | Organization successfully created |\n| `400 Bad Request` | Invalid input data or missing required fields |\n| `404 Not Found` | Category not found |\n| `409 Conflict` | Organization with this name already exists |\n\n### Notes\n- The category must exist before creating an organization\n- Organization names should be unique within the system\n- Newly created organizations are immediately available to receive donations"
+          },
+          "response": []
+        },
+        {
+          "name": "Edit Organization",
+          "id": "0003899e-a1cc-459b-aa21-2377d86f3833",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"organizationName\" : \"Govt School\"\r\n    \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/admin/organization/1/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "admin",
+                "organization",
+                "1",
+                "1"
+              ]
+            },
+            "description": "## Edit Organization\n\nUpdates an existing organization's details. This is an **admin-only** endpoint for managing organization information.\n\n### Endpoint\n`PUT /api/admin/organization/{organizationId}/{categoryId}`\n\n### Authorization\n🔒 **Admin privileges required**\n\n### Path Parameters\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| `organizationId` | integer | Yes | The ID of the organization to update |\n| `categoryId` | integer | Yes | The category ID to assign to the organization |\n\n### Request Body\n\n| Field | Type | Required | Description |\n|-------|------|----------|-------------|\n| `organizationName` | string | Yes | Updated name for the organization |\n\n### Example Request Body\n```json\n{\n    \"organizationName\": \"Govt School\"\n}\n```\n\n### Expected Responses\n\n| Status | Description |\n|--------|-------------|\n| `200 OK` | Organization successfully updated |\n| `400 Bad Request` | Invalid input data |\n| `404 Not Found` | Organization or category not found |\n| `403 Forbidden` | Admin privileges required |\n\n### Notes\n- Only administrators can modify organization details\n- The category ID in the path allows reassigning the organization to a different category"
+          },
+          "response": []
+        }
+      ],
+      "id": "640180f5-6082-43a7-b56b-18a5cec41232"
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "me",
+          "id": "f87ae733-4744-47d2-b8b9-426eab7fff5e",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/auth/me",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "8685c09e-8e34-4780-9377-50a5401294d7"
+    },
+    {
+      "name": "invoice",
+      "item": [
+        {
+          "name": "Download invoice",
+          "id": "5d683a77-7109-47c0-80b7-65935bbf918c",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/invoice/download/2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "invoice",
+                "download",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "1d4d14a2-2328-4d4f-9bd9-51e5c1ec345b"
+    }
+  ]
+}
