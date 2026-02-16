@@ -1,5 +1,7 @@
 package com.practice.onlinedonation.Service;
 
+import com.practice.onlinedonation.Exception.GlobalException;
+import com.practice.onlinedonation.Exception.LoginException;
 import com.practice.onlinedonation.Exception.ResourceNotFoundException;
 import com.practice.onlinedonation.Model.AppRole;
 import com.practice.onlinedonation.Model.Role;
@@ -45,6 +47,8 @@ public class AuthenticateServiceImpl implements AuthenticateService{
     private JwtService jwtService;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private GlobalException globalException;
 
     static int count = 0;
 
@@ -102,12 +106,7 @@ public class AuthenticateServiceImpl implements AuthenticateService{
                     .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
         } catch (AuthenticationException exception) {
 
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                    Map.of(
-                            "Message", "Bad Credentials",
-                            "Status", false
-                    )
-            );
+            throw new LoginException(exception.getMessage());
             //return new ResponseEntity<Object>(map, HttpStatus.NOT_FOUND);
         }
 
